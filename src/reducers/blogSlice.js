@@ -1,31 +1,28 @@
-import { createSlice, nanoid } from "@reduxjs/toolkit";
+import { createSlice, nanoid,createAsyncThunk } from "@reduxjs/toolkit";
+import {getAllBlogs,createBlog,deleteBlog,updateBlog} from '../services/usersServices'
 import {sub} from 'date-fns-jalali';
 const initialState ={
-    blogs:[
-    {
-        id: nanoid(),
-        date: sub(new Date(),{minutes:5}).toISOString(),
-        title: "اولین پست",
-        content:"محتوای اولین پست من",
-        user:"1",
-        reactions:{
-            heart:0,
-            like:0
-        }
-    },
-    {
-        id: nanoid(),
-        date: new Date().toISOString(),
-        title: "دومین پست",
-        content:"لورم ایپسوم یا طرح‌نما (به انگلیسی: Lorem ipsum) به متنی آزمایشی و بی‌معنی در صنعت چاپ، صفحه‌آرایی و طراحی گرافیک گفته می‌شود. طراح گرافیک از این متن به عنوان عنصری از ترکیب بندی برای پر کردن صفحه و ارایه اولیه شکل ظاهری و کلی طرح سفارش گرفته شده استفاده می نماید، تا از نظر گرافیکی نشانگر چگونگی نوع و اندازه فونت و ظاهر متن باشد. معمولا طراحان گرافیک برای صفحه‌آرایی، نخست از متن‌های آزمایشی و بی‌معنی استفاده می‌کنند تا صرفا به مشتری یا صاحب کار خود نشان دهند که صفحه طراحی یا صفحه بندی شده بعد از اینکه متن در آن قرار گیرد چگونه به نظر می‌رسد و قلم‌ها و اندازه‌بندی‌ها چگونه در نظر گرفته شده‌است. از آنجایی که طراحان عموما نویسنده متن نیستند و وظیفه رعایت حق تکثیر متون را ندارند و در همان حال کار آنها به نوعی وابسته به متن می‌باشد آنها با استفاده از محتویات ساختگی، صفحه گرافیکی خود را صفحه‌آرایی می‌کنند تا مرحله طراحی و صفحه‌بندی را به پایان برند.",
-        user:"2",
-        reactions:{
-            heart:0,
-            like:0
-        }
-    }
-],
+    blogs:[],
+    status:"idle",
+    error:null
 } 
+export const fetchBlogs = createAsyncThunk("/blogs/fetchBlogs", async()=>{
+ const response = await getAllBlogs();
+ return response.data;
+})
+export const deleteApiBlog = createAsyncThunk("/blogs/deleteApiBlog",async initialBlog=>{
+    await deleteBlog(initialBlog);
+    return initialBlog;
+
+})
+export const updateApiBlog = createAsyncThunk("/blogs/updateApiBlog",async initialBlog=>{
+ const response = await updateBlog(initialBlog,initialBlog.id);
+ return response.data;
+})
+export const addNewBlog = createAsyncThunk("/blogs/addNewBlog", async initialBlog =>{
+    const response = await createBlog(initialBlog);
+    return response.data;
+})
 const blogSlice = createSlice({
     name:'blogs',
     initialState:initialState,
@@ -34,12 +31,17 @@ const blogSlice = createSlice({
             reducer(state,action){
                state.blogs.push(action.payload) 
             },
-            prepare(title,content){
+            prepare(title,content,userId){
                 return{
                     payload:{
                         id:nanoid(),
                         title,
-                        content
+                        content,
+                        userId,
+                        reactions:{
+                            like:0,
+                            heart:0
+                        }
                     }
                 }
             }
@@ -70,6 +72,29 @@ reactionAdded:(state,action)=>{
 
 
     },
+    extraReducers:builder=>{
+        builder.addCase(fetchBlogs.pending , (state,action)=>{
+            state.status="loading"
+        })
+        .addCase(fetchBlogs.fulfilled,(state,action)=>{
+            state.status="completed"
+            state.blogs = action.payload;
+        })
+        .addCase(fetchBlogs.rejected,(state,action)=>{
+            state.status="failed"
+            state.error=action.error.message
+        })
+        .addCase(addNewBlog.fulfilled,(state,action)=>{
+            state.blogs.push(action.payload)
+        })
+        .addCase(deleteApiBlog.fulfilled,(state,action)=>{
+            state.blogs= state.blogs.filter(blog=>blog.id !== action.payload)
+        })
+        .addCase(updateApiBlog.fulfilled,(state,action)=>{
+            const updatedBlog=state.blogs.findIndex(blog=>blog.id===action.payload.id)
+            state.blogs[updatedBlog]=action.payload;
+        })
+    }
 })
 export const selectAllBlogs = (state) => state.blogs.blogs;
 export const selectBlogById = (state,blogId) => state.blogs.blogs.find(blog=>blog.id ===blogId)

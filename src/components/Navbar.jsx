@@ -8,6 +8,7 @@ const Navbar = ({children})=>{
                 {children}
             </div>
             <Link to={'/'} className="button" style={{float:'left'}}>وبلاگ</Link>
+            <Link to={'/authors'} className="button">نویسندگان وبلاگ</Link>
         </nav>
         
     )
