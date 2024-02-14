@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { createApiUser, deleteApiUser } from "../reducers/userSlice";
+import { createApiUser, deleteApiUser, selectAllUsers } from "../reducers/userSlice";
 import { nanoid } from "@reduxjs/toolkit";
 const Authors = () => {
-  const authors = useSelector((state) => state.users);
+  const authors = useSelector(selectAllUsers);
   const [user, setUser] = useState("");
   const dispatch = useDispatch();
   const handleUserChange = (e) => {

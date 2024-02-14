@@ -3,10 +3,28 @@ import { Link,useNavigate } from "react-router-dom";
 import { fetchBlogs, selectAllBlogs } from "../reducers/blogSlice";
 import TimeShow from './TimeShow'
 import ShowUser from './ShowUser'
-import { useEffect } from "react";
+import { useEffect,memo } from "react";
 import ReactionButtons from "./ReactionButtons";
 import Spinner from "./Spinner";
+let Blog=({blog})=>{
+    return(
+       
+        <div key={blog.id} style={{border:'1px solid blue',padding:'25px',margin:'10px'}}>
+            <h3>{blog.title}</h3>
+            <div>
+                <TimeShow timestamp = {blog.date}/>{" "}
+                <ShowUser userId = {blog.user}/>
+            </div>
+            <ReactionButtons blog={blog}/>
+            <div>{blog.content.substring(0,100)}</div>
+            <Link className="button" to={`/blogs/${blog.id}`} style={{marginTop:'15px'}}>ادامه مطلب</Link>
+        </div>
+        
+    )
+}
+Blog = memo(Blog)
 const BlogsList = ()=>{
+    
     const dispatch=useDispatch();
     const blogs = useSelector(selectAllBlogs);
     const orderedBlogs = blogs.slice().sort((a,b)=>b.date.localeCompare(a.date))
@@ -19,23 +37,14 @@ const BlogsList = ()=>{
     },[blogStatus,dispatch])
     const navigate = useNavigate();
     let content;
-    if(blogStatus==="loading"){
+    if(blogStatus === "loading"){
         content = <Spinner/>
         
     }
     else if(blogStatus==="completed"){
-        content =orderedBlogs.map((blog)=>{
+        content = orderedBlogs.map((blog)=>{
             return(
-                <div key={blog.id} style={{border:'1px solid blue',padding:'25px',margin:'10px'}}>
-                <h3>{blog.title}</h3>
-                <div>
-                    <TimeShow timestamp={blog.date}/>{" "}
-                    <ShowUser userId={blog.user}/>
-                </div>
-                <ReactionButtons blog={blog}/>
-                <div>{blog.content.substring(0,100)}</div>
-                <Link className="button" to={`/blogs/${blog.id}`} style={{marginTop:'15px'}}>ادامه مطلب</Link>
-                </div>
+               <Blog key={blog.id} blog={blog}/> 
             )  
         })
     }

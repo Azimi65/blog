@@ -1,6 +1,8 @@
 import { useSelector } from "react-redux"
+import { selectUserById } from "../reducers/userSlice";
 const ShowUser = ({userId}) => {
-    const userName = useSelector((state)=>state.users.find(user=>user.id===userId));
+    const userName = useSelector(state=>selectUserById(state,userId));
+    
     return(
         <span>نوشته شده توسط {" "}{userName?userName.fullname : "ناشناس"}</span>
     )

@@ -36,35 +36,16 @@
     {
       "id": "qeapEA9JKhmtI7Q_c4Czj",
       "date": "2024-02-07T10:44:46.435Z",
-      "title": "پست چهارم",
+      "title": "پست آخرین",
       "content": "پست چهارم مریم",
-      "user": "IdHmQ9uWKfp5JIoCG7eN7",
+      "user": "Ixril6pq4akIad8NQk5OK",
       "reactions": {
-        "heart": "0",
-        "like": "0"
-      }
-    },
-    {
-      "id": "MJ8lX-j_mAyA30Hmdt3JQ",
-      "date": "2024-02-07T10:54:07.298Z",
-      "title": "پست آخر",
-      "content": "پست آخر",
-      "user": "vfy6dA3SjRldLxfUvQ3pT",
-      "reactions": {
-        "heart": "0",
-        "like": "0"
+        "heart": 0,
+        "like": 0
       }
     }
   ],
   "users": [
-    {
-      "id": "IdHmQ9uWKfp5JIoCG7eN7",
-      "fullname": " علی میرزایی"
-    },
-    {
-      "id": "IdHmQ9uWKfp5JIoCE7eN7",
-      "fullname": " لیلا احمدی"
-    },
     {
       "id": "Ixril6pq4akIad8NQk5OK",
       "fullname": "مریم"
@@ -88,6 +69,10 @@
     {
       "id": "_uNqCOILanr1bJexDvm2M",
       "fullname": "وحید کاوندی"
+    },
+    {
+      "id": "NoE0_HDoO0JZ1mT6buNtC",
+      "fullname": "طاها حسینی"
     }
   ]
 }
