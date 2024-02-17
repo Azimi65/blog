@@ -3,6 +3,8 @@ import { useDispatch, useSelector} from "react-redux";
 import { addNewBlog  } from "../reducers/blogSlice";
 import { nanoid } from "@reduxjs/toolkit";
 import { useNavigate } from "react-router-dom";
+import {useAddNewBlogMutation} from '../api/apiSlice'
+import { selectAllUsers } from "../reducers/userSlice";
 const CreateBlogForm = () =>{
     const navigate=useNavigate()
     const[title,setTitle]=useState("");
@@ -12,11 +14,13 @@ const CreateBlogForm = () =>{
     const contentChange = (e) =>{setContent(e.target.value)}
     const userChange = (e) => {setUserId(e.target.value)}
     const dispatch = useDispatch();
-    const users = useSelector(state=>state.users);
+    const users = useSelector(selectAllUsers);
+    const [addNewBlog,{isLoading}] = useAddNewBlogMutation()
+
     const handleSubmitForm = async ()=>{
         if(content&&title){
             try{
-                await dispatch(addNewBlog({
+                await addNewBlog({
                 id:nanoid(),
                 date:new Date().toISOString(),
                 title:title,
@@ -26,7 +30,7 @@ const CreateBlogForm = () =>{
                     heart:"0",
                     like:"0"
                 }
-                    }))
+                    }).unwrap()
                     navigate("/")
                     setTitle(""),
                     setContent("")

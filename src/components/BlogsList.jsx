@@ -3,9 +3,10 @@ import { Link,useNavigate } from "react-router-dom";
 import { fetchBlogs, selectAllBlogs } from "../reducers/blogSlice";
 import TimeShow from './TimeShow'
 import ShowUser from './ShowUser'
-import { useEffect,memo } from "react";
+import { useEffect,memo, useMemo } from "react";
 import ReactionButtons from "./ReactionButtons";
 import Spinner from "./Spinner";
+import { useGetBlogsQuery } from "../api/apiSlice";
 let Blog=({blog})=>{
     return(
        
@@ -22,26 +23,37 @@ let Blog=({blog})=>{
         
     )
 }
-Blog = memo(Blog)
+// Blog = memo(Blog)
+
 const BlogsList = ()=>{
+    const {
+        data:blogs=[],
+        isLoading,
+        isSuccess,
+        isError,
+        error}=useGetBlogsQuery();
+    // const dispatch=useDispatch();
+    // const blogs = useSelector(selectAllBlogs);
+    const orderedBlogs =useMemo(()=>{
+        const orderedBlogs=blogs.slice();
+        orderedBlogs.sort((a,b)=>b.date.localeCompare(a.date))
+        return orderedBlogs
+    },[blogs]) 
     
-    const dispatch=useDispatch();
-    const blogs = useSelector(selectAllBlogs);
-    const orderedBlogs = blogs.slice().sort((a,b)=>b.date.localeCompare(a.date))
-    const blogStatus=useSelector(state=>state.blogs.status)
-    useEffect(()=>{
-        if(blogStatus==='idle'){
-             dispatch(fetchBlogs())
-        }
+    // const blogStatus=useSelector(state=>state.blogs.status)
+    // useEffect(()=>{
+    //     if(blogStatus==='idle'){
+    //          dispatch(fetchBlogs())
+    //     }
        
-    },[blogStatus,dispatch])
+    // },[blogStatus,dispatch])
     const navigate = useNavigate();
     let content;
-    if(blogStatus === "loading"){
+    if(isLoading){
         content = <Spinner/>
         
     }
-    else if(blogStatus==="completed"){
+    else if(isSuccess){
         content = orderedBlogs.map((blog)=>{
             return(
                <Blog key={blog.id} blog={blog}/> 
@@ -49,7 +61,6 @@ const BlogsList = ()=>{
         })
     }
     
-    // console.log(renderedBlogs)
  return(
     <section className="">
         <button className="full-button" style={{marginTop:'10px'}} onClick={()=>navigate('/blogs/create-blog')}>ساخت پست جدید</button>
